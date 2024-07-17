@@ -1,0 +1,23 @@
+###
+POST http://localhost:3000/plan
+Content-Type: application/json
+Authorization: f4fa59bc-290f-417a-8968-83ba5ee9c25c
+
+{
+    "title": "autoban",
+    "description": "dawdaw"
+}
+
+
+###
+GET http://localhost:3000/plan/2
+
+
+###
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin"
+}
