@@ -1,7 +1,7 @@
-import express from 'express';
+import express, { ErrorRequestHandler } from 'express';
 import { app as planRoute } from './routes/plan.route';
 import { app as userRoute } from './routes/user.route';
-import { app as programRoute } from './routes/program.route';
+import { ZodError } from 'zod';
 
 export const app = express();
 
@@ -13,9 +13,18 @@ app.use(express.json());
 // });
 
 app.use('/plan', planRoute);
-app.use('/program', programRoute);
 app.use(userRoute);
 
 app.use((req, res) => {
     res.status(404).send({ message: 'Not Found' });
 });
+
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+    if (err instanceof ZodError) {
+        res.status(400).send({ message: err.message });
+        return;
+    }
+    res.status(500);
+};
+
+app.use(errorHandler);
