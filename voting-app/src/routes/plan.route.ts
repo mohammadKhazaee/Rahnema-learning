@@ -18,9 +18,8 @@ app.post('/:id/program', loginMiddleware, (req, res) => {
         ...req.body,
         planId: req.params.id,
     });
-    handleExpress(res, () => {
-        planService.createProgram(dto, req.user);
-    });
+
+    handleExpress(res, () => planService.createProgram(dto, req.user));
 });
 
 app.get('/:id', (req, res, next) => {

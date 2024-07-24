@@ -9,19 +9,18 @@ export class UserService {
         this.userRepo = new UserRepository();
     }
 
-    login(dto: LoginUserDto) {
-        const user = this.userRepo.findOne(dto);
+    async login({ password, username }: LoginUserDto) {
+        const user = await this.userRepo.findOne(username);
 
-        if (user === undefined)
+        if (!user || (user && user.password !== password))
             throw new HttpError(401, 'username or password is invalid');
 
         return user;
     }
 
-    authenticateById(id: string) {
-        const user = this.userRepo.findById(id);
-
-        if (user === undefined) throw new HttpError(401, 'not authorized');
+    async authenticateById(id: string) {
+        const user = await this.userRepo.findById(id);
+        if (!user) throw new HttpError(401, 'not authorized');
 
         return user;
     }

@@ -1,5 +1,7 @@
 import { app } from './api';
-import { User } from './routes/user.route';
+import { AppDataSource } from './data-source';
+import { User } from './modules/User/model/user';
+import { seedUser } from './seed';
 
 declare global {
     namespace Express {
@@ -9,4 +11,8 @@ declare global {
     }
 }
 
-app.listen(3000);
+AppDataSource.initialize()
+    .then(() => seedUser())
+    .then(() => {
+        app.listen(3000);
+    });

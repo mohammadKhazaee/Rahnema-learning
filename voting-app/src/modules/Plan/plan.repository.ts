@@ -1,5 +1,8 @@
+import { Repository } from 'typeorm';
 import { Plan } from './model/plan';
 import { Program } from './Program/model/program';
+import { PlanEntity } from './entity/plan.entity';
+import { AppDataSource } from '../../data-source';
 
 export interface CreatePlan {
     title: string;
@@ -15,31 +18,27 @@ export interface CreateProgram {
 }
 
 export class PlanRepository {
-    private plans: Plan[] = [];
+    private planRepo: Repository<PlanEntity>;
 
-    public getNextId() {
-        return this.plans.length + 1;
+    constructor() {
+        this.planRepo = AppDataSource.getRepository(PlanEntity);
     }
 
-    public create(plan: CreatePlan) {
-        const createdPlan = { ...plan, id: this.getNextId() };
-        this.plans.push(createdPlan);
-        return createdPlan;
+    public create(plan: CreatePlan): Promise<Plan> {
+        return this.planRepo.save(plan);
     }
 
-    public findById(id: number) {
-        return this.plans.find((p) => p.id === id);
+    public findById(id: number): Promise<Plan | null> {
+        return this.planRepo.findOne({
+            where: { id },
+            relations: ['programs'],
+        });
     }
 
-    public addProgram(plan: Plan, program: CreateProgram) {
-        const savedProgram = {
-            id: plan.programs.length + 1,
-            planId: plan.id,
-            title: program.title,
-            description: program.description,
-            userId: program.userId,
-        };
-        plan.programs.push(savedProgram);
-        return savedProgram;
+    public addProgram(plan: Plan, program: CreateProgram): Promise<Plan> {
+        return this.planRepo.save({
+            ...plan,
+            programs: [...plan.programs, program],
+        });
     }
 }

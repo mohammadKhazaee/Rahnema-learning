@@ -1,9 +1,9 @@
 import { Response } from 'express';
 import { HttpError } from './my-error';
 
-export const handleExpress = <T>(res: Response, cb: () => T) => {
+export const handleExpress = async <T>(res: Response, cb: () => Promise<T>) => {
     try {
-        const data = cb();
+        const data = await cb();
         res.status(200).send(data);
     } catch (error) {
         if (error instanceof HttpError) {

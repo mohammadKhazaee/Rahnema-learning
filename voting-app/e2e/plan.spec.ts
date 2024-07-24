@@ -1,8 +1,17 @@
 import request from 'supertest';
 import { app } from '../src/api';
 import { createPlanTest, loginAdminTest, loginRepTest } from './utility';
+import { AppDataSource } from '../src/data-source';
 
 describe('Plan test suite', () => {
+    beforeAll(async () => {
+        await AppDataSource.initialize();
+    });
+
+    afterAll(async () => {
+        await AppDataSource.destroy();
+    });
+
     describe('Reading plan', () => {
         it('should read the plan', async () => {
             const user = await loginAdminTest();

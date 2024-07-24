@@ -1,5 +1,7 @@
-import { v4 } from 'uuid';
 import { User } from './model/user';
+import { Repository } from 'typeorm';
+import { UserEntity } from './entity/user.entity';
+import { AppDataSource } from '../../data-source';
 
 export interface LoginUser {
     username: string;
@@ -7,27 +9,17 @@ export interface LoginUser {
 }
 
 export class UserRepository {
-    private users: User[];
+    private userRepo: Repository<UserEntity>;
 
     constructor() {
-        this.users = [
-            { id: v4(), username: 'admin', password: 'admin', role: 'Admin' },
-            {
-                id: v4(),
-                username: 'rep',
-                password: 'rep',
-                role: 'Representative',
-            },
-        ];
+        this.userRepo = AppDataSource.getRepository(UserEntity);
     }
 
-    findOne(user: LoginUser) {
-        return this.users.find(
-            (u) => u.username === user.username && u.password === user.password
-        );
+    findOne(username: string): Promise<User | null> {
+        return this.userRepo.findOneBy({ username });
     }
 
-    findById(id: string) {
-        return this.users.find((u) => u.id === id);
+    findById(id: string): Promise<User | null> {
+        return this.userRepo.findOneBy({ id });
     }
 }
