@@ -4,15 +4,17 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "ts-node src/app.ts",
-        "start:dev": "nodemon src/app.ts",
-        "test": "jest",
-        "test:e2e": "jest --testMatch **/e2e/**/*.spec.ts"
+        "start": "cross-env NODE_ENV=production ts-node src/app.ts",
+        "start:dev": "cross-env NODE_ENV=development nodemon src/app.ts",
+        "test": "cross-env NODE_ENV=test jest",
+        "test:e2e": "cross-env NODE_ENV=test jest --testMatch **/e2e/**/*.spec.ts"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "cross-env": "^7.0.3",
+        "dotenv-flow": "^4.1.0",
         "express": "^4.19.2",
         "mysql": "^2.18.1",
         "reflect-metadata": "^0.2.2",

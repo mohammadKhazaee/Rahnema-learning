@@ -2,10 +2,12 @@ import request from 'supertest';
 import { app } from '../src/api';
 import { createPlanTest, loginAdminTest, loginRepTest } from './utility';
 import { AppDataSource } from '../src/data-source';
+import { seedUser } from '../src/seed';
 
 describe('Program test suite', () => {
     beforeAll(async () => {
         await AppDataSource.initialize();
+        await seedUser();
     });
 
     afterAll(async () => {
