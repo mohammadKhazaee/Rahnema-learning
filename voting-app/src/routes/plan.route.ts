@@ -4,25 +4,33 @@ import { createPlanDto } from '../modules/Plan/dto/create-plan.dto';
 import { z } from 'zod';
 import { loginMiddleware } from '../login-middleware';
 import { createProgramDto } from '../modules/Plan/Program/dto/create-program.dto';
-import { planService } from '../dependency';
+import { PlanService } from '../modules/Plan/plan.service';
+import { UserService } from '../modules/User/user.service';
 
-export const app = Router();
+export const makePlanRouter = (
+    planService: PlanService,
+    userService: UserService
+) => {
+    const app = Router();
 
-app.post('/', loginMiddleware, (req, res) => {
-    const dto = createPlanDto.parse(req.body);
-    handleExpress(res, () => planService.createPlan(dto, req.user));
-});
-
-app.post('/:id/program', loginMiddleware, (req, res) => {
-    const dto = createProgramDto.parse({
-        ...req.body,
-        planId: req.params.id,
+    app.post('/', loginMiddleware(userService), (req, res) => {
+        const dto = createPlanDto.parse(req.body);
+        handleExpress(res, () => planService.createPlan(dto, req.user));
     });
 
-    handleExpress(res, () => planService.createProgram(dto, req.user));
-});
+    app.post('/:id/program', loginMiddleware(userService), (req, res) => {
+        const dto = createProgramDto.parse({
+            ...req.body,
+            planId: req.params.id,
+        });
 
-app.get('/:id', (req, res, next) => {
-    const id = z.coerce.number().parse(req.params.id);
-    handleExpress(res, () => planService.getPlanById(id));
-});
+        handleExpress(res, () => planService.createProgram(dto, req.user));
+    });
+
+    app.get('/:id', (req, res, next) => {
+        const id = z.coerce.number().parse(req.params.id);
+        handleExpress(res, () => planService.getPlanById(id));
+    });
+
+    return app;
+};

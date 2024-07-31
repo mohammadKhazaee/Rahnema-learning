@@ -1,7 +1,7 @@
 import { User } from './model/user';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from './entity/user.entity';
-import { AppDataSource } from '../../data-source';
+import { seedUser } from '../../seed';
 
 export interface LoginUser {
     username: string;
@@ -11,8 +11,9 @@ export interface LoginUser {
 export class UserRepository {
     private userRepo: Repository<UserEntity>;
 
-    constructor() {
-        this.userRepo = AppDataSource.getRepository(UserEntity);
+    constructor(appDataSource: DataSource) {
+        this.userRepo = appDataSource.getRepository(UserEntity);
+        seedUser();
     }
 
     findOne(username: string): Promise<User | null> {

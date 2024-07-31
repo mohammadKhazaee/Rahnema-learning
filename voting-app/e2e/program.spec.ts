@@ -1,13 +1,16 @@
 import request from 'supertest';
-import { app } from '../src/api';
+import { makeApp } from '../src/api';
 import { createPlanTest, loginAdminTest, loginRepTest } from './utility';
 import { AppDataSource } from '../src/data-source';
 import { seedUser } from '../src/seed';
 
 describe('Program test suite', () => {
+    // @ts-ignore
+    let app: Express;
     beforeAll(async () => {
-        await AppDataSource.initialize();
-        await seedUser();
+        const dataSource = await AppDataSource.initialize();
+        app = makeApp(dataSource);
+        // await seedUser();
     });
 
     afterAll(async () => {
@@ -16,19 +19,19 @@ describe('Program test suite', () => {
 
     describe('Create', () => {
         it('should fail if its not login', async () => {
-            const admin = await loginAdminTest();
+            const admin = await loginAdminTest(app);
 
             const title = 'Oroumie';
-            const plan = await createPlanTest(title, admin, 200);
+            const plan = await createPlanTest(app, title, admin, 200);
             await request(app).post(`/plan/${plan.id}/program`).expect(401);
         });
 
         it('should create a program', async () => {
-            const user = await loginRepTest();
-            const admin = await loginAdminTest();
+            const user = await loginRepTest(app);
+            const admin = await loginAdminTest(app);
 
             const title = 'Oroumie';
-            const plan = await createPlanTest(title, admin, 200);
+            const plan = await createPlanTest(app, title, admin, 200);
 
             const { body: planWithProgram } = await request(app)
                 .post(`/plan/${plan.id}/program`)

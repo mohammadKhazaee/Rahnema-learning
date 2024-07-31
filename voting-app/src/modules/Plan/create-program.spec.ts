@@ -1,11 +1,25 @@
 import { ForbiddenError } from '../../utility/my-error';
+import { Plan } from './model/plan';
+import { CreatePlan, CreateProgram, IPlanRepository } from './plan.repository';
 import { PlanService } from './plan.service';
+
+class MockPlanRepo implements IPlanRepository {
+    create(plan: CreatePlan): Promise<Plan> {
+        throw new Error('Method not implemented.');
+    }
+    findById(id: number): Promise<Plan | null> {
+        throw new Error('Method not implemented.');
+    }
+    addProgram(plan: Plan, program: CreateProgram): Promise<Plan> {
+        throw new Error('Method not implemented.');
+    }
+}
 
 describe('Create program test suite', () => {
     let planService: PlanService;
 
     beforeEach(() => {
-        planService = new PlanService();
+        planService = new PlanService(new MockPlanRepo());
     });
 
     it('should fail to create program if user is not representative', () => {

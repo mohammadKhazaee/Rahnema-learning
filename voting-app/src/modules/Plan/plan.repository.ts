@@ -1,8 +1,13 @@
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Plan } from './model/plan';
 import { Program } from './Program/model/program';
 import { PlanEntity } from './entity/plan.entity';
-import { AppDataSource } from '../../data-source';
+
+export interface IPlanRepository {
+    create(plan: CreatePlan): Promise<Plan>;
+    findById(id: number): Promise<Plan | null>;
+    addProgram(plan: Plan, program: CreateProgram): Promise<Plan>;
+}
 
 export interface CreatePlan {
     title: string;
@@ -20,8 +25,8 @@ export interface CreateProgram {
 export class PlanRepository {
     private planRepo: Repository<PlanEntity>;
 
-    constructor() {
-        this.planRepo = AppDataSource.getRepository(PlanEntity);
+    constructor(appDataSource: DataSource) {
+        this.planRepo = appDataSource.getRepository(PlanEntity);
     }
 
     public create(plan: CreatePlan): Promise<Plan> {

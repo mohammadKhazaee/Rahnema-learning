@@ -1,7 +1,7 @@
 import request from 'supertest';
-import { app } from '../src/api';
 
-export const loginAdminTest = async () => {
+// @ts-ignore
+export const loginAdminTest = async (app: Express) => {
     const { body: user } = await request(app)
         .post('/login')
         .send({ username: 'admin', password: 'admin' })
@@ -9,7 +9,8 @@ export const loginAdminTest = async () => {
     return user;
 };
 
-export const loginRepTest = async () => {
+// @ts-ignore
+export const loginRepTest = async (app: Express) => {
     const { body: user } = await request(app)
         .post('/login')
         .send({ username: 'rep', password: 'rep' })
@@ -18,6 +19,8 @@ export const loginRepTest = async () => {
 };
 
 export const createPlanTest = async (
+    // @ts-ignore
+    app: Express,
     title: string,
     user: any,
     statusCode: number

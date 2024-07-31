@@ -6,14 +6,11 @@ import {
 } from '../../utility/my-error';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { Plan } from './model/plan';
-import { PlanRepository } from './plan.repository';
+import { IPlanRepository } from './plan.repository';
 import { CreateProgramDto } from './Program/dto/create-program.dto';
 
 export class PlanService {
-    private planRepo: PlanRepository;
-    constructor() {
-        this.planRepo = new PlanRepository();
-    }
+    constructor(private planRepo: IPlanRepository) {}
 
     async getPlanById(planId: number) {
         const plan = await this.planRepo.findById(planId);

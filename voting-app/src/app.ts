@@ -1,4 +1,4 @@
-import { app } from './api';
+import { makeApp } from './api';
 import { AppDataSource } from './data-source';
 import { User } from './modules/User/model/user';
 import { seedUser } from './seed';
@@ -12,7 +12,7 @@ declare global {
 }
 
 AppDataSource.initialize()
-    .then(() => seedUser())
-    .then(() => {
+    .then((dataSource) => makeApp(dataSource))
+    .then((app) => {
         app.listen(3000);
     });
