@@ -1,18 +1,26 @@
-import { User } from '../User/model/user';
+import {
+    isAdmin,
+    isRepresentative,
+    User,
+    UserRepresentative,
+} from '../User/model/user';
 import {
     ForbiddenError,
     HttpError,
     NotFoundError,
 } from '../../utility/my-error';
 import { CreatePlanDto } from './dto/create-plan.dto';
-import { Plan } from './model/plan';
+import { isFuturePlan, Plan } from './model/plan';
 import { IPlanRepository } from './plan.repository';
 import { CreateProgramDto } from './Program/dto/create-program.dto';
+import { PlanId } from './model/plan-id';
+import { CreateProgram } from './Program/model/create-program';
+import { isFutureDate } from '../../data/future-date';
 
 export class PlanService {
     constructor(private planRepo: IPlanRepository) {}
 
-    async getPlanById(planId: number) {
+    async getPlanById(planId: PlanId) {
         const plan = await this.planRepo.findById(planId);
 
         if (!plan) throw new HttpError(404, 'Plan Not Found');
@@ -21,22 +29,24 @@ export class PlanService {
     }
 
     async createPlan(dto: CreatePlanDto, loggedUser: User) {
-        if (dto.deadline.getTime() < new Date().getTime())
+        if (!isFutureDate(dto.deadline))
             throw new HttpError(
                 409,
                 'you should not use a deadline in the past'
             );
 
-        if (loggedUser.role !== 'Admin')
+        if (!isAdmin(loggedUser))
             throw new HttpError(403, 'not authorized to create plan');
 
-        const plan = {
-            title: dto.title,
-            description: dto.description || '',
-            deadline: dto.deadline,
-            programs: [],
-        };
-        return this.planRepo.create(plan);
+        return this.planRepo.create({
+            user: loggedUser,
+            data: {
+                title: dto.title,
+                description: dto.description || '',
+                deadline: dto.deadline,
+                programs: [],
+            },
+        });
     }
 
     async createProgram(dto: CreateProgramDto, user: User): Promise<Plan> {
@@ -44,25 +54,23 @@ export class PlanService {
 
         if (!plan) throw new NotFoundError();
 
-        if (this.canCreateProgram(user, plan)) {
-            return this.planRepo.addProgram(plan, {
-                description: dto.description || '',
-                title: dto.title,
-                userId: user.id,
-            });
-        }
+        if (!isRepresentative(user)) throw new ForbiddenError();
 
-        throw new HttpError(400, 'program is not valid');
-    }
+        if (!isFuturePlan(plan))
+            throw new HttpError(400, 'plan is in the past');
 
-    canCreateProgram(user: User, plan: Plan): boolean {
-        if (user.role !== 'Representative') throw new ForbiddenError();
+        const program = CreateProgram.make(
+            user,
+            { description: dto.description || '', title: dto.title },
+            plan
+        );
 
-        const program = plan.programs.find((z) => z.userId === user.id);
-        if (program) return false;
+        if (!program)
+            throw new HttpError(
+                400,
+                'this user have another program for the plan'
+            );
 
-        if (plan.deadline.getTime() < new Date().getTime()) return false;
-
-        return true;
+        return this.planRepo.addProgram(program);
     }
 }

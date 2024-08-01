@@ -2,6 +2,7 @@ import { User } from './model/user';
 import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from './entity/user.entity';
 import { seedUser } from '../../seed';
+import { UserId } from './model/user-id';
 
 export interface LoginUser {
     username: string;
@@ -20,7 +21,7 @@ export class UserRepository {
         return this.userRepo.findOneBy({ username });
     }
 
-    findById(id: string): Promise<User | null> {
+    findById(id: UserId): Promise<User | null> {
         return this.userRepo.findOneBy({ id });
     }
 }

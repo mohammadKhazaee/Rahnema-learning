@@ -32,10 +32,12 @@ export const makeApp = (dataSource: DataSource) => {
     });
 
     const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+        console.log(err);
         if (err instanceof ZodError) {
             res.status(400).send({ message: err.message });
             return;
         }
+
         res.status(500);
     };
 

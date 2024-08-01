@@ -2,7 +2,6 @@ import request from 'supertest';
 import { makeApp } from '../src/api';
 import { createPlanTest, loginAdminTest, loginRepTest } from './utility';
 import { AppDataSource } from '../src/data-source';
-import { seedUser } from '../src/seed';
 
 describe('Program test suite', () => {
     // @ts-ignore

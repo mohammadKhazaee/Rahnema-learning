@@ -8,26 +8,30 @@ import {
 } from 'typeorm';
 import { PlanEntity } from '../../entity/plan.entity';
 import { UserEntity } from '../../../User/entity/user.entity';
+import { NonEmptyString } from '../../../../data/non-empty-string';
+import { ProgramId } from '../model/program-id';
+import { UserId } from '../../../User/model/user-id';
+import { PlanId } from '../../model/plan-id';
 
 @Entity('programs')
 export class ProgramEntity {
     @PrimaryGeneratedColumn()
-    id!: number;
+    id!: ProgramId;
 
     @Column()
-    title!: string;
+    title!: NonEmptyString;
 
     @Column()
     description!: string;
 
     @Column()
-    userId!: string;
+    userId!: UserId;
 
     @ManyToOne(() => UserEntity)
     user!: UserEntity;
 
     @Column()
-    planId!: number;
+    planId!: PlanId;
 
     @ManyToOne(() => PlanEntity)
     plan!: PlanEntity;

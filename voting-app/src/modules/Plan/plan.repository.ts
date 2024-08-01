@@ -2,27 +2,29 @@ import { DataSource, Repository } from 'typeorm';
 import { Plan } from './model/plan';
 import { Program } from './Program/model/program';
 import { PlanEntity } from './entity/plan.entity';
+import { NonEmptyString } from '../../data/non-empty-string';
+import { PlanId } from './model/plan-id';
+import { CreateProgram } from './Program/model/create-program';
+import { UserAdmin } from '../User/model/user';
+import { FutureDate } from '../../data/future-date';
 
 export interface IPlanRepository {
     create(plan: CreatePlan): Promise<Plan>;
-    findById(id: number): Promise<Plan | null>;
-    addProgram(plan: Plan, program: CreateProgram): Promise<Plan>;
+    findById(id: PlanId): Promise<Plan | null>;
+    addProgram(createProgram: CreateProgram): Promise<Plan>;
 }
 
 export interface CreatePlan {
-    title: string;
-    description: string;
-    deadline: Date;
-    programs: Program[];
+    user: UserAdmin;
+    data: {
+        title: NonEmptyString;
+        description: string;
+        deadline: FutureDate;
+        programs: Program[];
+    };
 }
 
-export interface CreateProgram {
-    title: string;
-    description: string;
-    userId: string;
-}
-
-export class PlanRepository {
+export class PlanRepository implements IPlanRepository {
     private planRepo: Repository<PlanEntity>;
 
     constructor(appDataSource: DataSource) {
@@ -30,20 +32,19 @@ export class PlanRepository {
     }
 
     public create(plan: CreatePlan): Promise<Plan> {
-        return this.planRepo.save(plan);
+        return this.planRepo.save(plan.data);
     }
 
-    public findById(id: number): Promise<Plan | null> {
+    public findById(id: PlanId): Promise<Plan | null> {
         return this.planRepo.findOne({
             where: { id },
             relations: ['programs'],
         });
     }
 
-    public addProgram(plan: Plan, program: CreateProgram): Promise<Plan> {
-        return this.planRepo.save({
-            ...plan,
-            programs: [...plan.programs, program],
-        });
+    public addProgram(createProgram: CreateProgram): Promise<Plan> {
+        console.log(createProgram.getPlanWithProgram());
+
+        return this.planRepo.save(createProgram.getPlanWithProgram());
     }
 }

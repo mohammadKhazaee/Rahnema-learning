@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { handleExpress } from '../utility/handle-express';
 import { createPlanDto } from '../modules/Plan/dto/create-plan.dto';
-import { z } from 'zod';
 import { loginMiddleware } from '../login-middleware';
 import { createProgramDto } from '../modules/Plan/Program/dto/create-program.dto';
 import { PlanService } from '../modules/Plan/plan.service';
 import { UserService } from '../modules/User/user.service';
+import { zodPlanId } from '../modules/Plan/model/plan-id';
 
 export const makePlanRouter = (
     planService: PlanService,
@@ -28,7 +28,7 @@ export const makePlanRouter = (
     });
 
     app.get('/:id', (req, res, next) => {
-        const id = z.coerce.number().parse(req.params.id);
+        const id = zodPlanId.parse(req.params.id);
         handleExpress(res, () => planService.getPlanById(id));
     });
 

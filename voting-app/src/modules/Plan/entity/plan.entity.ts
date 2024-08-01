@@ -7,14 +7,16 @@ import {
     OneToMany,
 } from 'typeorm';
 import { ProgramEntity } from '../Program/entity/program.entity';
+import { PlanId } from '../model/plan-id';
+import { NonEmptyString } from '../../../data/non-empty-string';
 
 @Entity('plans')
 export class PlanEntity {
     @PrimaryGeneratedColumn()
-    id!: number;
+    id!: PlanId;
 
     @Column()
-    title!: string;
+    title!: NonEmptyString;
 
     @Column()
     description!: string;

@@ -1,5 +1,6 @@
 import { HttpError } from '../../utility/my-error';
 import { LoginUserDto } from './dto/login-user.dto';
+import { UserId } from './model/user-id';
 import { UserRepository } from './user.repository';
 
 export class UserService {
@@ -14,7 +15,7 @@ export class UserService {
         return user;
     }
 
-    async authenticateById(id: string) {
+    async authenticateById(id: UserId) {
         const user = await this.userRepo.findById(id);
         if (!user) throw new HttpError(401, 'not authorized');
 
