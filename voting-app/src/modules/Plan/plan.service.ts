@@ -29,9 +29,12 @@ export class PlanService {
     }
 
     async createPlan(dto: CreatePlanDto, loggedUser: User) {
-        if (!isFutureDate(dto.deadline))
+        if (
+            !isFutureDate(dto.deadlineProgram) ||
+            !isFutureDate(dto.deadlineVote)
+        )
             throw new HttpError(
-                409,
+                400,
                 'you should not use a deadline in the past'
             );
 
@@ -43,7 +46,8 @@ export class PlanService {
             data: {
                 title: dto.title,
                 description: dto.description || '',
-                deadline: dto.deadline,
+                deadlineProgram: dto.deadlineProgram,
+                deadlineVote: dto.deadlineVote,
                 programs: [],
             },
         });

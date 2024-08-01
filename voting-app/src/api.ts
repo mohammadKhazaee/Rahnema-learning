@@ -7,6 +7,8 @@ import { DataSource } from 'typeorm';
 import { UserRepository } from './modules/User/user.repository';
 import { UserService } from './modules/User/user.service';
 import { makeUserRouter } from './routes/user.route';
+import { VoteRepository } from './modules/Plan/vote/vote.repository';
+import { VoteService } from './modules/Plan/vote/vote.service';
 
 export const makeApp = (dataSource: DataSource) => {
     const app = express();
@@ -24,7 +26,10 @@ export const makeApp = (dataSource: DataSource) => {
     const planRepository = new PlanRepository(dataSource);
     const planService = new PlanService(planRepository);
 
-    app.use('/plan', makePlanRouter(planService, userService));
+    const voteRepository = new VoteRepository(dataSource);
+    const voteService = new VoteService(voteRepository, planService);
+
+    app.use('/plan', makePlanRouter(planService, userService, voteService));
     app.use(makeUserRouter(userService));
 
     app.use((req, res) => {
@@ -32,7 +37,6 @@ export const makeApp = (dataSource: DataSource) => {
     });
 
     const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-        console.log(err);
         if (err instanceof ZodError) {
             res.status(400).send({ message: err.message });
             return;

@@ -7,7 +7,10 @@
         "start": "cross-env NODE_ENV=production ts-node src/app.ts",
         "start:dev": "cross-env NODE_ENV=development nodemon src/app.ts",
         "test": "cross-env NODE_ENV=test jest",
-        "test:e2e": "cross-env NODE_ENV=test jest --testMatch **/e2e/**/*.spec.ts"
+        "test:e2e": "cross-env NODE_ENV=test jest --testMatch **/e2e/**/*.spec.ts --runInBand",
+        "typeorm": "typeorm-ts-node-commonjs",
+        "typeorm:run": "typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
+        "typeorm:generate": "typeorm-ts-node-commonjs migration:generate -d src/data-source.ts"
     },
     "keywords": [],
     "author": "",

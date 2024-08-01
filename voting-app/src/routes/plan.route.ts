@@ -6,10 +6,13 @@ import { createProgramDto } from '../modules/Plan/Program/dto/create-program.dto
 import { PlanService } from '../modules/Plan/plan.service';
 import { UserService } from '../modules/User/user.service';
 import { zodPlanId } from '../modules/Plan/model/plan-id';
+import { VoteService } from '../modules/Plan/vote/vote.service';
+import { zodProgramId } from '../modules/Plan/Program/model/program-id';
 
 export const makePlanRouter = (
     planService: PlanService,
-    userService: UserService
+    userService: UserService,
+    voteService: VoteService
 ) => {
     const app = Router();
 
@@ -26,6 +29,19 @@ export const makePlanRouter = (
 
         handleExpress(res, () => planService.createProgram(dto, req.user));
     });
+
+    app.post(
+        '/:id/program/:programId/vote',
+        loginMiddleware(userService),
+        (req, res) => {
+            const programId = zodProgramId.parse(req.params.programId);
+            const planId = zodPlanId.parse(req.params.id);
+
+            handleExpress(res, () =>
+                voteService.vote({ planId, programId }, req.user)
+            );
+        }
+    );
 
     app.get('/:id', (req, res, next) => {
         const id = zodPlanId.parse(req.params.id);

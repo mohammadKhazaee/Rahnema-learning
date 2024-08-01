@@ -18,4 +18,15 @@ export const seedUser = async () => {
             },
         ]);
     }
+
+    if (count === 2) {
+        await userRepo.save([
+            {
+                id: v4(),
+                username: 'normal',
+                password: 'normal',
+                role: 'Normal',
+            },
+        ]);
+    }
 };

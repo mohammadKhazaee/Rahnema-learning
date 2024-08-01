@@ -22,7 +22,10 @@ export class PlanEntity {
     description!: string;
 
     @Column()
-    deadline!: Date;
+    deadlineProgram!: Date;
+
+    @Column()
+    deadlineVote!: Date;
 
     @OneToMany(() => ProgramEntity, (program) => program.plan, {
         cascade: ['insert'],

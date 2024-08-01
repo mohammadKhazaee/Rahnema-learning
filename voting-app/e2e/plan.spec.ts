@@ -11,7 +11,6 @@ describe('Plan test suite', () => {
     beforeAll(async () => {
         const dataSource = await AppDataSource.initialize();
         app = makeApp(dataSource);
-        // await seedUser();
     });
 
     afterAll(async () => {

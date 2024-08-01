@@ -19,7 +19,8 @@ export interface CreatePlan {
     data: {
         title: NonEmptyString;
         description: string;
-        deadline: FutureDate;
+        deadlineProgram: FutureDate;
+        deadlineVote: FutureDate;
         programs: Program[];
     };
 }
@@ -43,8 +44,6 @@ export class PlanRepository implements IPlanRepository {
     }
 
     public addProgram(createProgram: CreateProgram): Promise<Plan> {
-        console.log(createProgram.getPlanWithProgram());
-
         return this.planRepo.save(createProgram.getPlanWithProgram());
     }
 }

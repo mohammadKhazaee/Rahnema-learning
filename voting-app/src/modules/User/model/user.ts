@@ -21,3 +21,9 @@ export interface UserAdmin extends User {
 }
 
 export const isAdmin = (u: User): u is UserAdmin => u.role === 'Admin';
+
+export interface UserNormal extends User {
+    role: 'Normal';
+}
+
+export const isUserNormal = (u: User): u is UserNormal => u.role === 'Normal';
